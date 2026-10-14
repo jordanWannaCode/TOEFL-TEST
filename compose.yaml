@@ -1,0 +1,84 @@
+name: toefl-simulator
+services:
+  postgres:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_DB: toefl
+      POSTGRES_USER: toefl
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run scripts/init-local.sh}
+    volumes: [postgres-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U toefl -d toefl"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  minio:
+    image: toefl-simulator-minio
+    build: ./infra/minio
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?Run scripts/init-local.sh}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Run scripts/init-local.sh}
+    ports: ["127.0.0.1:9000:9000", "127.0.0.1:9001:9001"]
+    volumes: [minio-data:/data]
+    healthcheck:
+      test: [CMD, curl, -f, http://localhost:9000/minio/health/live]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  backend:
+    image: toefl-simulator-backend
+    build: ./apps/api
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/toefl
+      DATABASE_USER: toefl
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?Run scripts/init-local.sh}
+      SPRING_PROFILES_ACTIVE: local
+      SESSION_COOKIE_SECURE: "false"
+      LOCAL_USER_EMAIL: ${LOCAL_USER_EMAIL:?Run scripts/init-local.sh}
+      LOCAL_USER_PASSWORD: ${LOCAL_USER_PASSWORD:?Run scripts/init-local.sh}
+      READING_PRACTICE_DURATION_SECONDS: ${READING_PRACTICE_DURATION_SECONDS:-0}
+    depends_on:
+      postgres: {condition: service_healthy}
+    ports: ["127.0.0.1:8080:8080"]
+    healthcheck:
+      test: [CMD, curl, -f, http://localhost:8080/actuator/health/readiness]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+  ai-service:
+    image: toefl-simulator-ai-service
+    build: ./apps/ai-service
+    ports: ["127.0.0.1:8000:8000"]
+    healthcheck:
+      test: [CMD, /app/.venv/bin/python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  frontend:
+    image: toefl-simulator-frontend
+    build: ./apps/web
+    depends_on:
+      backend: {condition: service_healthy}
+    ports: ["127.0.0.1:4200:80"]
+    healthcheck:
+      test: [CMD, wget, -Y, "off", -q, --spider, http://127.0.0.1/]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  backend-check:
+    profiles: [checks]
+    image: maven:3.9.11-eclipse-temurin-21
+    working_dir: /app
+    volumes: ["./apps/api:/app", "maven-cache:/root/.m2"]
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/toefl_test
+      DATABASE_USER: toefl
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?Run scripts/init-local.sh}
+    depends_on:
+      postgres: {condition: service_healthy}
+    command: mvn -B verify
+volumes:
+  postgres-data:
+  minio-data:
+  maven-cache:

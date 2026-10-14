@@ -1,0 +1,65 @@
+openapi: 3.1.0
+info:
+  title: TOEFL AI Simulator — Sprint 0
+  version: 0.1.0
+  description: Santé uniquement ; aucune API métier disponible.
+paths:
+  /actuator/health:
+    servers: [{url: "http://localhost:8080"}]
+    get:
+      summary: Santé Spring et PostgreSQL
+      responses:
+        '200':
+          description: Disponible
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status: {type: string, enum: [UP]}
+        '503': {description: Indisponible}
+  /actuator/health/liveness:
+    servers: [{url: "http://localhost:8080"}]
+    get:
+      responses:
+        '200': {description: Processus Spring vivant}
+        '503': {description: Processus indisponible}
+  /actuator/health/readiness:
+    servers: [{url: "http://localhost:8080"}]
+    get:
+      responses:
+        '200': {description: Spring prêt et PostgreSQL accessible}
+        '503': {description: Non prêt}
+  /health:
+    servers: [{url: "http://localhost:8000"}]
+    get:
+      summary: Santé du service IA (aucun fournisseur configuré)
+      responses:
+        '200':
+          description: Processus disponible
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [status, service]
+                properties:
+                  status: {type: string, const: ok}
+                  service: {type: string, const: ai-service}
+  /system/health:
+    servers: [{url: "http://localhost:4200"}]
+    get:
+      summary: Proxy frontend vers la readiness Spring
+      responses:
+        '200':
+          description: Backend prêt
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status: {type: string, enum: [UP]}
+        '503': {description: Backend non prêt}
+        '502': {description: Backend inaccessible}

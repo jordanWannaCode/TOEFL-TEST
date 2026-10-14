@@ -218,3 +218,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Sprint 0
+node_modules/
+dist/
+playwright-report/
+test-results/
+
+# Angular compiler cache
+.angular/

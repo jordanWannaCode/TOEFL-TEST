@@ -1,0 +1,28 @@
+name: Reading practice checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.9.5'
+          python-version: '3.12'
+      - run: ./scripts/init-local.sh
+      - run: docker compose up --build -d postgres backend ai-service frontend --wait --wait-timeout 240
+      - run: ./scripts/smoke.sh --reading
+      - run: cd apps/web && npm ci && npx playwright install --with-deps chromium
+      - run: ./scripts/check.sh
+      - if: failure()
+        run: docker compose logs --tail=100
+      - if: always()
+        run: docker compose down

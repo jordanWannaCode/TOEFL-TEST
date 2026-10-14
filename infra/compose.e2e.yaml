@@ -1,0 +1,6 @@
+# Projet Docker distinct : aucune tentative de test dans la base personnelle.
+services:
+  backend:
+    ports: !override []
+  frontend:
+    ports: !override ["127.0.0.1:4210:80"]
