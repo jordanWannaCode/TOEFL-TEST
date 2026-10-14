@@ -20,3 +20,5 @@ Processus : documenter source officielle datée, règle et degré de certitude ;
 
 ## Mise à jour — 14 octobre 2026
 La page ETS et le PDF de spécification 2026 sont désormais accessibles. Les quatre types Listening, la lecture unique et le maximum d’un point par item sont confirmés. Les 47 items et 29 minutes sont des valeurs approximatives/adaptatives, pas des constantes universelles. Voir ets-references/listening-2026.md pour les sources et les règles encore non vérifiées. Les affirmations provisoires ci-dessus décrivent l’état de la consultation initiale, pas une absence actuelle de toutes sources.
+
+Writing : BUILD_A_SENTENCE, WRITE_AN_EMAIL, WRITE_FOR_AN_ACADEMIC_DISCUSSION ; voir ets-references/writing-2026.md pour preuves et règles non vérifiées.

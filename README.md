@@ -62,3 +62,6 @@ La section personnalisée regroupe les quatre stimuli : lecture unique, pas de p
 Variables stockage transmises par Compose : OBJECT_STORAGE_ENDPOINT, OBJECT_STORAGE_ACCESS_KEY, OBJECT_STORAGE_SECRET_KEY, OBJECT_STORAGE_BUCKET. Les identifiants réutilisent MINIO_ROOT_USER / MINIO_ROOT_PASSWORD générés dans .env, sans clé externe. Le bucket est privé. LISTENING_IMPORT_DIRECTORY permet un import local contrôlé avec un volume read-only.
 [API Listening](docs/api/listening-v1.md) · [Pipeline et relecture](docs/listening-content.md) · [Sources ETS et limites](docs/ets-references/listening-2026.md) · [ADR](docs/ADR-0003.md) · [Validation Sprint 3](docs/sprint-3-validation.md).
 `make up` démarre désormais les cinq services ; `make smoke` inclut MinIO. `scripts/check.sh` vérifie Reading et Listening, avec stockage MinIO réel et bases isolées. La génération optionnelle nécessite eSpeak NG ; les WAV embarqués suffisent au démarrage.
+
+## Sprint 4 — Writing
+Trois tâches originales, brouillons persistés, tests personnalisés chronométrés et évaluation IA différée avec état indisponible explicite. Voir [développement Writing](docs/writing-development.md), [API](docs/api/writing-v1.md), [ADR 0004](docs/ADR-0004.md) et [sources ETS](docs/ets-references/writing-2026.md).

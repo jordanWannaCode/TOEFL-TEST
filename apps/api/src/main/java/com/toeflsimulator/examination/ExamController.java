@@ -31,6 +31,7 @@ public class ExamController {
     }
     @GetMapping("/sessions/{id}/results") Object results(@AuthenticationPrincipal StudentPrincipal owner,@PathVariable UUID id) { return sessions.results(owner.id(),id); }
     @GetMapping("/dashboard") Object dashboard(@AuthenticationPrincipal StudentPrincipal owner) { return sessions.dashboard(owner.id()); }
+    @PostMapping("/sessions/{id}/evaluations/retry") Object retry(@AuthenticationPrincipal StudentPrincipal owner,@PathVariable UUID id) { sessions.retryEvaluation(owner.id(),id); return Map.of("status","RETRY_REQUESTED"); }
     public record Navigation(@Min(0) int position) {}
     @PostMapping("/sessions/{id}/navigation") Object navigate(@AuthenticationPrincipal StudentPrincipal owner,@PathVariable UUID id,@Valid @RequestBody Navigation body) { return sessions.navigate(owner.id(),id,body.position()); }
     private ResponseEntity<?> etag(JsonNode result) { return ResponseEntity.ok().eTag(result.path("version").asText()).body(result); }

@@ -1,0 +1,7 @@
+{
+  "review": "Original examples and corrections manually reviewed internally; contract references, not ETS calibration.",
+  "cases": [
+    {"taskType":"WRITE_AN_EMAIL","response":"She go to the library every day.","originalSpan":"She go","correction":"She goes","category":"AGREEMENT","explanation":"Third-person singular present requires goes."},
+    {"taskType":"WRITE_FOR_AN_ACADEMIC_DISCUSSION","response":"Yesterday our group repair a chair instead of discarding it.","originalSpan":"Yesterday our group repair","correction":"Yesterday our group repaired","category":"TENSE","explanation":"Yesterday locates the action in the past; use the simple past repaired."}
+  ]
+}

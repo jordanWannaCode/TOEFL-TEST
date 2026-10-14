@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { Blueprint, Dashboard, ResponseBody, Results, SessionView, User, PlaybackState, ListeningExercise, TranscriptTurn } from './models';
+import {WritingExercise,WritingResponse,WritingReport} from '../features/writing/models';
 @Injectable({ providedIn: 'root' })
 export class Api {
   private readonly http = inject(HttpClient);
@@ -44,6 +45,10 @@ export class Api {
   }
   transcript(session: string, item: string) { return firstValueFrom(this.http.get<TranscriptTurn[]>(`/api/v1/sessions/${session}/items/${item}/transcript`)); }
   async navigate(session: string, position: number) { return firstValueFrom(this.http.post<SessionView>(`/api/v1/sessions/${session}/navigation`, { position }, { headers: await this.headers() })); }
+  writingExercises(mode:string) {return firstValueFrom(this.http.get<WritingExercise[]>('/api/v1/writing/exercises',{params:{mode}}));}
+  writingReport(id:string) {return firstValueFrom(this.http.get<WritingReport>(`/api/v1/sessions/${id}/results`));}
+  async saveWriting(id:string,item:string,body:WritingResponse,version:number,key:string) {return firstValueFrom(this.http.put<{version:number;savedAt:string;serverTime:string}>(`/api/v1/sessions/${id}/items/${item}/response`,body,{headers:await this.headers({'If-Match':`"${version}"`,'Idempotency-Key':key})}));}
+  async retryWriting(id:string) {return firstValueFrom(this.http.post(`/api/v1/sessions/${id}/evaluations/retry`,{},{headers:await this.headers()}));}
   resetCsrf() { this.csrf = null; }
 }
 export function errorMessage(error: unknown): string {

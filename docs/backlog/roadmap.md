@@ -14,3 +14,5 @@ Parcours Reading complet, identité personnelle, dashboard et tests livrés. La 
 
 ## Sprint 3 livré
 Quatre types Listening, MinIO privé, WAV synthétiques originaux, import DRAFT/relecture, filtres, groupes, correction objective, transcripts après clôture et section chronométrée personnalisée. Moteur et UI de session partagés, scheduler d’expiration, tests audio/replay/reprise et régressions Reading. Restent : calibrage externe, voix de meilleure qualité, vérification des règles de navigation/reprise ETS, accommodations et adaptation réelle.
+
+Sprint 4 : Writing, autosave et évaluation différée implémentés ; vérification fournisseur réel et calibration externe restent conditionnelles aux identifiants/budget. Prochaine étape : corpus étendu, confidentialité/suppression et tests de qualité fournisseur.

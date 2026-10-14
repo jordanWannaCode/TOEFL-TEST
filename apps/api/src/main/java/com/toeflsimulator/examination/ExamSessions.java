@@ -9,12 +9,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.toeflsimulator.common.*;
 import com.toeflsimulator.content.QuestionCatalog;
 import com.toeflsimulator.scoring.SessionScorer;
+import com.toeflsimulator.evaluation.WritingEvaluation;
 @Service
 public class ExamSessions {
     private final JdbcTemplate jdbc; private final Json json; private final Clock clock;
-    private final QuestionCatalog catalog; private final SessionScorer scorer;
-    public ExamSessions(JdbcTemplate jdbc, Json json, Clock clock, QuestionCatalog catalog, SessionScorer scorer) {
-        this.jdbc=jdbc; this.json=json; this.clock=clock; this.catalog=catalog; this.scorer=scorer;
+    private final QuestionCatalog catalog; private final SessionScorer scorer; private final WritingEvaluation writing;
+    public ExamSessions(JdbcTemplate jdbc, Json json, Clock clock, QuestionCatalog catalog, SessionScorer scorer, WritingEvaluation writing) {
+        this.jdbc=jdbc; this.json=json; this.clock=clock; this.catalog=catalog; this.scorer=scorer; this.writing=writing;
     }
     public record Item(UUID id, JsonNode content, JsonNode response, Instant savedAt, boolean available) {}
     public record SessionView(UUID id,String state,int version,UUID blueprintVersionId,Instant startedAt,Instant expiresAt,Instant serverTime,List<Item> items,String section,String mode,JsonNode playbackPolicy,String navigationPolicy,int currentPosition) {}
@@ -72,12 +73,13 @@ public class ExamSessions {
         JsonNode duplicate=receipt(id,key,"submit",payload); if(duplicate!=null) return duplicate;
         session=expire(session); requireActive(session); requireVersion(session,expectedVersion);
         Instant now=clock.instant(); jdbc.update("UPDATE simulator.exam_sessions SET state='SUBMITTED',submitted_at=?,version=version+1 WHERE id=?",ts(now),id);
-        scorer.evaluate(id,now); JsonNode result=json.tree(new Closed(id,"SUBMITTED",session.version()+1,now)); storeReceipt(id,key,"submit",payload,result); return result;
+        evaluate(session,now); JsonNode result=json.tree(new Closed(id,"SUBMITTED",session.version()+1,now)); storeReceipt(id,key,"submit",payload,result); return result;
     }
     @Transactional(noRollbackFor=ApiException.class)
     public JsonNode results(UUID owner,UUID id) {
         Session session=expire(lock(owner,id));
         if(session.state().equals("ACTIVE")) throw new ApiException(409,"SESSION_ACTIVE","Submit the session before viewing results.");
+        if(session.section().equals("WRITING")) return writing.report(id);
         return json.read(jdbc.queryForObject("SELECT result FROM simulator.evaluations WHERE session_id=?",String.class,id));
     }
     @Transactional(noRollbackFor=ApiException.class)
@@ -85,19 +87,22 @@ public class ExamSessions {
         var pending=jdbc.query("SELECT id FROM simulator.exam_sessions WHERE owner_id=? AND state='ACTIVE' AND expires_at<=? ORDER BY id FOR UPDATE SKIP LOCKED",(rs,n)->rs.getObject(1,UUID.class),owner,ts(clock.instant()));
         pending.forEach(id->expire(lock(owner,id)));
         var metrics=jdbc.query("SELECT s.section,count(*) attempts,sum((e.result->'objectiveScore'->>'correct')::int) correct,sum((e.result->'objectiveScore'->>'total')::int) total FROM simulator.exam_sessions s JOIN simulator.evaluations e ON e.session_id=s.id WHERE s.owner_id=? GROUP BY s.section ORDER BY s.section DESC",(rs,n)->Map.<String,Object>of("section",rs.getString("section"),"attemptCount",rs.getLong("attempts"),"objectiveAccuracy",rs.getInt("total")==0?0d:(double)rs.getInt("correct")/rs.getInt("total")),owner);
-        long completed=metrics.stream().mapToLong(m->((Number)m.get("attemptCount")).longValue()).sum();
+        long completed=jdbc.queryForObject("SELECT count(*) FROM simulator.exam_sessions WHERE owner_id=? AND state<>'ACTIVE'",Long.class,owner);
         var recent=jdbc.query("SELECT s.id,s.section,s.mode,s.state,s.version,s.started_at,s.submitted_at,e.result FROM simulator.exam_sessions s LEFT JOIN simulator.evaluations e ON e.session_id=s.id WHERE s.owner_id=? ORDER BY s.started_at DESC,s.id LIMIT 20",(rs,n)->{
             var value=new LinkedHashMap<String,Object>(); value.put("sessionId",rs.getObject("id",UUID.class)); value.put("section",rs.getString("section")); value.put("mode",rs.getString("mode")); value.put("state",rs.getString("state")); value.put("startedAt",rs.getTimestamp("started_at").toInstant()); value.put("completedAt",instant(rs,"submitted_at")); value.put("objectiveScore",rs.getString("result")==null?null:json.read(rs.getString("result")).path("objectiveScore")); return value;
         },owner);
-        return Map.of("completedSessions",completed,"sectionMetrics",metrics,"recentAttempts",recent);
+        return Map.of("completedSessions",completed,"sectionMetrics",metrics,"recentAttempts",recent,"writingProgress",writing.progress(owner));
     }
+    private void evaluate(Session session,Instant now) { if(session.section().equals("WRITING")) writing.close(session.id(),now); else scorer.evaluate(session.id(),now); }
+    @Transactional(noRollbackFor=ApiException.class)
+    public void retryEvaluation(UUID owner,UUID id) { var session=expire(lock(owner,id)); if(session.state().equals("ACTIVE") || !session.section().equals("WRITING")) throw new ApiException(409,"EVALUATION_LOCKED","Writing session must be closed."); writing.retry(id); }
     private Session lock(UUID owner,UUID id) {
         return jdbc.query("SELECT * FROM simulator.exam_sessions WHERE id=? AND owner_id=? FOR UPDATE",(rs,n)->new Session(id,rs.getObject("blueprint_version_id",UUID.class),rs.getString("state"),rs.getInt("version"),rs.getTimestamp("started_at").toInstant(),instant(rs,"expires_at"),instant(rs,"submitted_at"),rs.getString("section"),rs.getString("mode"),json.read(rs.getString("playback_policy")),rs.getString("navigation_policy"),rs.getInt("current_position")),id,owner).stream().findFirst().orElseThrow(ExamSessions::missing);
     }
     private Session expire(Session session) {
         Instant now=clock.instant();
         if(session.state().equals("ACTIVE") && session.expires()!=null && !now.isBefore(session.expires())) {
-            jdbc.update("UPDATE simulator.exam_sessions SET state='EXPIRED',submitted_at=?,version=version+1 WHERE id=?",ts(session.expires()),session.id()); scorer.evaluate(session.id(),now);
+            jdbc.update("UPDATE simulator.exam_sessions SET state='EXPIRED',submitted_at=?,version=version+1 WHERE id=?",ts(session.expires()),session.id()); evaluate(session,now);
             return new Session(session.id(),session.blueprint(),"EXPIRED",session.version()+1,session.started(),session.expires(),session.expires(),session.section(),session.mode(),session.policy(),session.navigation(),session.position());
         }
         return session;
@@ -126,7 +131,7 @@ public class ExamSessions {
         int count=jdbc.queryForObject("SELECT count(*) FROM simulator.session_items WHERE session_id=?",Integer.class,id);
         if(target<0 || target>=count) throw new ApiException(422,"INVALID_POSITION","Invalid item position.");
         if(session.navigation().equals("FORWARD_ONLY") && target!=session.position()) {
-            boolean complete=jdbc.queryForObject("SELECT coalesce(bool_or(p.completed),false) FROM simulator.session_items i LEFT JOIN simulator.playback_state p ON p.item_id=i.id WHERE i.session_id=? AND i.position=?",Boolean.class,id,session.position());
+            boolean complete=session.section().equals("WRITING") || jdbc.queryForObject("SELECT coalesce(bool_or(p.completed),false) FROM simulator.session_items i LEFT JOIN simulator.playback_state p ON p.item_id=i.id WHERE i.session_id=? AND i.position=?",Boolean.class,id,session.position());
             if(target!=session.position()+1 || !complete) throw new ApiException(409,"NAVIGATION_RESTRICTED","Complete the current audio before advancing; backward navigation is disabled.");
         }
         if(target!=session.position()) jdbc.update("UPDATE simulator.exam_sessions SET current_position=?,version=version+1 WHERE id=?",target,id);
@@ -150,6 +155,17 @@ public class ExamSessions {
     }
     private void storeReceipt(UUID id,String key,String operation,JsonNode payload,JsonNode response) { jdbc.update("INSERT INTO simulator.request_receipts(session_id,idempotency_key,operation,payload,response) VALUES (?,?,?,?::jsonb,?::jsonb)",id,key,operation,json.write(payload),json.write(response)); }
     private void validateResponse(JsonNode content,JsonNode response) {
+        String task=content.path("taskType").asText();
+        if(Set.of("WRITE_AN_EMAIL","WRITE_FOR_AN_ACADEMIC_DISCUSSION").contains(task)) {
+            if(response==null || !response.isObject() || response.size()!=1 || !response.path("text").isTextual() || response.path("text").asText().length()>12000 || response.path("text").asText().indexOf(0)>=0) throw invalid();
+            return;
+        }
+        if(task.equals("BUILD_A_SENTENCE")) {
+            if(response==null || !response.isObject() || response.size()!=1 || !response.path("elementIds").isArray()) throw invalid();
+            Set<String> available=new HashSet<>(); content.path("elements").forEach(e->available.add(e.path("id").asText()));
+            Set<String> seen=new HashSet<>(); for(var element:response.path("elementIds")) if(!element.isTextual() || !available.contains(element.asText()) || !seen.add(element.asText())) throw invalid();
+            return;
+        }
         if(response==null || !response.isObject() || response.size()!=1 || !response.path("answers").isObject()) throw invalid();
         Set<String> allowed=new HashSet<>();
         if(content.path("taskType").asText().equals("COMPLETE_THE_WORDS")) content.path("segments").forEach(segment->{ if(segment.has("gapId")) allowed.add(segment.path("gapId").asText()); }); else if(content.has("questions")) content.path("questions").forEach(q->allowed.add(q.path("id").asText())); else allowed.add("choice");

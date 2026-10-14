@@ -1,4 +1,4 @@
-name: Reading and Listening checks
+name: Reading, Listening and Writing checks
 on: [push, pull_request]
 permissions:
   contents: read

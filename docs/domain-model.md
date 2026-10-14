@@ -25,3 +25,5 @@ Les futurs AIJob (evaluationId, retryCount, status, provider, modelVersion, late
 
 ## Extension Sprint 3
 AudioAsset et ListeningStimulus associent un WAV privé, checksum, durée, locuteurs et transcript privé à une révision de groupe. Les questions du groupe partagent le même stimulus ; réponses et clés sont indexées par qid. PlaybackState et PlaybackGrant sont privés par la chaîne item → session → owner. Les politiques de playback/navigation sont copiées du blueprint vers la session, avec une position persistée. Les stratégies adaptatives restent NONE, sans faux routing.
+
+Writing réutilise réponses/révisions/sessions ; evaluation_rubrics référence immuable, evaluation_jobs unique par item avec bail, writing_evaluations résultat et métadonnées/usage. Suppression en cascade vers le propriétaire.

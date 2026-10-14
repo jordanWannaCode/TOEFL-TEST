@@ -37,6 +37,9 @@ services:
       SESSION_COOKIE_SECURE: "false"
       LOCAL_USER_EMAIL: ${LOCAL_USER_EMAIL:?Run scripts/init-local.sh}
       LOCAL_USER_PASSWORD: ${LOCAL_USER_PASSWORD:?Run scripts/init-local.sh}
+      AI_SERVICE_URL: http://ai-service:8000
+      AI_INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN:?Run scripts/init-local.sh}
+      WRITING_SECTION_DURATION_SECONDS: ${WRITING_SECTION_DURATION_SECONDS:-300}
       READING_PRACTICE_DURATION_SECONDS: ${READING_PRACTICE_DURATION_SECONDS:-0}
       OBJECT_STORAGE_ENDPOINT: http://minio:9000
       OBJECT_STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:?Run scripts/init-local.sh}
@@ -55,6 +58,12 @@ services:
   ai-service:
     image: toefl-simulator-ai-service
     build: ./apps/ai-service
+    environment:
+      AI_INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN:?Run scripts/init-local.sh}
+      WRITING_AI_PROVIDER: ${WRITING_AI_PROVIDER:-disabled}
+      WRITING_AI_MODEL: ${WRITING_AI_MODEL:-}
+      WRITING_AI_API_KEY: ${WRITING_AI_API_KEY:-}
+      APP_ENV: local
     ports: ["127.0.0.1:8000:8000"]
     healthcheck:
       test: [CMD, /app/.venv/bin/python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
@@ -78,6 +87,7 @@ services:
     working_dir: /app
     volumes: ["./apps/api:/app", "maven-cache:/root/.m2"]
     environment:
+      WRITING_WORKER_DELAY_MS: "3600000"
       DATABASE_URL: jdbc:postgresql://postgres:5432/toefl_test
       OBJECT_STORAGE_ENDPOINT: http://minio:9000
       OBJECT_STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:?Run scripts/init-local.sh}

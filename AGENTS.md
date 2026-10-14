@@ -15,3 +15,5 @@
 - Avant livraison : vérifier git diff, tests/build, documentation des commandes et absence de secrets. Ne pas committer sans demande.
 
 - Listening : stockage MinIO privé, autorisations audio liées au propriétaire et à la session ; transcripts après clôture uniquement. Les règles non vérifiées restent des politiques personnalisées, pas des règles ETS. Les sorties TTS restent DRAFT jusqu’à relecture.
+
+- Writing : variants de phrases privés, scoring déterministe ; textes évalués après clôture uniquement. Rubrics/prompts versionnés, spans vérifiés, scores internes estimés. Fournisseur test réservé à APP_ENV=test ; aucune évaluation simulée dans la base personnelle. Secrets IA uniquement dans l’environnement sécurisé.

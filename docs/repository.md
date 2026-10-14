@@ -14,3 +14,5 @@ Les fichiers .env, .venv, node_modules, target, dist et rapports sont locaux et 
 - apps/api/src/main/java/com/toeflsimulator/ : identity, content, blueprint, examination, scoring et common ; interfaces publiques pour les frontières métier.
 
 Sprint 3 : features/listening et shared/audio-player ; ExamSessions/ExamController remplacent les noms Reading pour le moteur partagé. media/ObjectStorage et adaptateur MinIO, contenu/import/blueprints Listening, interfaces speech dans ai-service et manifest original sous content/listening. Les transcripts et WAV embarqués restent hors des chemins de ressources web publiques.
+
+Writing : apps/web/src/app/features/writing ; apps/api/.../evaluation et examination existant ; apps/ai-service/app/evaluation pour schémas/prompts/fournisseurs. Contrats docs/api/writing-v1.md.

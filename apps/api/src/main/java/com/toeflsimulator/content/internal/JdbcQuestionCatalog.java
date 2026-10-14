@@ -10,6 +10,6 @@ public class JdbcQuestionCatalog implements QuestionCatalog {
     private final JdbcTemplate jdbc; private final Json json;
     public JdbcQuestionCatalog(JdbcTemplate jdbc, Json json) { this.jdbc=jdbc; this.json=json; }
     public JsonNode approvedContent(UUID id) {
-        return jdbc.query("SELECT content FROM simulator.question_versions WHERE id=? AND status='APPROVED' AND section IN ('READING','LISTENING')",(rs,n)->json.read(rs.getString(1)),id).stream().findFirst().orElseThrow(()->new ApiException(422,"UNAVAILABLE_CONTENT","Approved content is unavailable."));
+        return jdbc.query("SELECT content FROM simulator.question_versions WHERE id=? AND status='APPROVED' AND section IN ('READING','LISTENING','WRITING')",(rs,n)->json.read(rs.getString(1)),id).stream().findFirst().orElseThrow(()->new ApiException(422,"UNAVAILABLE_CONTENT","Approved content is unavailable."));
     }
 }

@@ -1,0 +1,72 @@
+{
+  "review": "Internal manual review of original prompts and sentence variants; external pedagogical calibration pending",
+  "exercises": [
+    {
+      "taskType": "BUILD_A_SENTENCE",
+      "title": "A study group invitation",
+      "instructions": "Arrange every phrase once to form a grammatical sentence.",
+      "elements": [
+        {
+          "id": "a",
+          "text": "We can meet"
+        },
+        {
+          "id": "b",
+          "text": "after class"
+        },
+        {
+          "id": "c",
+          "text": "in the library"
+        }
+      ],
+      "difficulty": "A2",
+      "skills": [
+        "WORD_ORDER"
+      ],
+      "expectedResponseFormat": "elementIds",
+      "rubricRef": "sentence-variants-v1",
+      "version": 1,
+      "original": true
+    },
+    {
+      "taskType": "WRITE_AN_EMAIL",
+      "title": "Request a quieter study room",
+      "instructions": "Write an email to the campus study-room coordinator.",
+      "prompt": "Your group has reserved a room beside a busy rehearsal studio. Explain the problem, request a quieter room for Thursday afternoon, and offer an alternative time if no room is available. Do not include real personal details.",
+      "difficulty": "B1",
+      "skills": [
+        "REGISTER",
+        "TASK_FULFILLMENT"
+      ],
+      "expectedResponseFormat": "text",
+      "rubricRef": "write_an_email-v1",
+      "version": 1,
+      "original": true
+    },
+    {
+      "taskType": "WRITE_FOR_AN_ACADEMIC_DISCUSSION",
+      "title": "Choosing a campus sustainability project",
+      "instructions": "Contribute your opinion and support it with reasons. Engage with the discussion.",
+      "prompt": "Professor Lee: Our campus can fund either a repair workshop or additional recycling bins. Which should receive funding first, and why?",
+      "contributions": [
+        {
+          "name": "Maya",
+          "text": "A repair workshop could extend the life of items and help students learn practical skills."
+        },
+        {
+          "name": "Owen",
+          "text": "Recycling bins would be available to more people every day, so their impact might be broader."
+        }
+      ],
+      "difficulty": "B2",
+      "skills": [
+        "REASONING",
+        "COHERENCE"
+      ],
+      "expectedResponseFormat": "text",
+      "rubricRef": "write_for_an_academic_discussion-v1",
+      "version": 1,
+      "original": true
+    }
+  ]
+}
