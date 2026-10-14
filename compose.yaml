@@ -38,8 +38,14 @@ services:
       LOCAL_USER_EMAIL: ${LOCAL_USER_EMAIL:?Run scripts/init-local.sh}
       LOCAL_USER_PASSWORD: ${LOCAL_USER_PASSWORD:?Run scripts/init-local.sh}
       READING_PRACTICE_DURATION_SECONDS: ${READING_PRACTICE_DURATION_SECONDS:-0}
+      OBJECT_STORAGE_ENDPOINT: http://minio:9000
+      OBJECT_STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:?Run scripts/init-local.sh}
+      OBJECT_STORAGE_SECRET_KEY: ${MINIO_ROOT_PASSWORD:?Run scripts/init-local.sh}
+      OBJECT_STORAGE_BUCKET: listening
+      LISTENING_SECTION_DURATION_SECONDS: ${LISTENING_SECTION_DURATION_SECONDS:-300}
     depends_on:
       postgres: {condition: service_healthy}
+      minio: {condition: service_healthy}
     ports: ["127.0.0.1:8080:8080"]
     healthcheck:
       test: [CMD, curl, -f, http://localhost:8080/actuator/health/readiness]
@@ -73,10 +79,16 @@ services:
     volumes: ["./apps/api:/app", "maven-cache:/root/.m2"]
     environment:
       DATABASE_URL: jdbc:postgresql://postgres:5432/toefl_test
+      OBJECT_STORAGE_ENDPOINT: http://minio:9000
+      OBJECT_STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:?Run scripts/init-local.sh}
+      OBJECT_STORAGE_SECRET_KEY: ${MINIO_ROOT_PASSWORD:?Run scripts/init-local.sh}
+      OBJECT_STORAGE_BUCKET: listening
+      LISTENING_SECTION_DURATION_SECONDS: ${LISTENING_SECTION_DURATION_SECONDS:-300}
       DATABASE_USER: toefl
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?Run scripts/init-local.sh}
     depends_on:
       postgres: {condition: service_healthy}
+      minio: {condition: service_healthy}
     command: mvn -B verify
 volumes:
   postgres-data:

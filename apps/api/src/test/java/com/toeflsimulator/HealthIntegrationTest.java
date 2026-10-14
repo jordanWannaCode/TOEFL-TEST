@@ -14,7 +14,7 @@ class HealthIntegrationTest {
         var response = http.getForEntity("/actuator/health/readiness", String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(200);
         assertThat(response.getBody()).contains("UP");
-        assertThat(jdbc.queryForObject("SELECT count(*) FROM flyway_schema_history WHERE success", Integer.class)).isEqualTo(3);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM flyway_schema_history WHERE success", Integer.class)).isEqualTo(4);
         assertThat(jdbc.queryForObject("SELECT count(*) FROM information_schema.schemata WHERE schema_name='simulator'", Integer.class)).isEqualTo(1);
     }
     @Test void healthDoesNotDiscloseDatabaseDetails() {

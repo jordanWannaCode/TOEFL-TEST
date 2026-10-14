@@ -4,7 +4,7 @@ cd "$(dirname "$0")/.."
 # Seulement les ressources du projet de test sont supprimées à la fin.
 cleanup() { docker compose -p toefl-simulator-e2e -f compose.yaml -f infra/compose.e2e.yaml down -v >/dev/null; }
 trap cleanup EXIT
-docker compose -p toefl-simulator-e2e -f compose.yaml -f infra/compose.e2e.yaml up -d postgres backend frontend --wait --wait-timeout 180
+docker compose -p toefl-simulator-e2e -f compose.yaml -f infra/compose.e2e.yaml up -d postgres minio backend frontend --wait --wait-timeout 180
 python3 - <<'PY'
 import os, subprocess
 from pathlib import Path

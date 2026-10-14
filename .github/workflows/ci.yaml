@@ -1,4 +1,4 @@
-name: Reading practice checks
+name: Reading and Listening checks
 on: [push, pull_request]
 permissions:
   contents: read
@@ -18,8 +18,8 @@ jobs:
           version: '0.9.5'
           python-version: '3.12'
       - run: ./scripts/init-local.sh
-      - run: docker compose up --build -d postgres backend ai-service frontend --wait --wait-timeout 240
-      - run: ./scripts/smoke.sh --reading
+      - run: docker compose up --build -d postgres minio backend ai-service frontend --wait --wait-timeout 240
+      - run: ./scripts/smoke.sh
       - run: cd apps/web && npm ci && npx playwright install --with-deps chromium
       - run: ./scripts/check.sh
       - if: failure()

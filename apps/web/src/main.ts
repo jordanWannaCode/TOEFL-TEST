@@ -8,6 +8,7 @@ bootstrapApplication(AppComponent, {
   providers: [provideZonelessChangeDetection(), provideHttpClient(), provideRouter([
     { path:'login', loadComponent:() => import('./app/features/auth/login.component').then(m=>m.LoginComponent) },
     { path:'', canActivate:[authGuard], loadComponent:() => import('./app/features/dashboard/dashboard.component').then(m=>m.DashboardComponent) },
+    { path:'listening', canActivate:[authGuard], loadComponent:() => import('./app/features/listening/catalog.component').then(m=>m.ListeningCatalogComponent) },
     { path:'practice/:id', canActivate:[authGuard], loadComponent:() => import('./app/features/reading/session.component').then(m=>m.SessionComponent) },
     { path:'results/:id', canActivate:[authGuard], loadComponent:() => import('./app/features/reading/results.component').then(m=>m.ResultsComponent) },
     { path:'**', redirectTo:'' },

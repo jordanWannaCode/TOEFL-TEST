@@ -11,3 +11,6 @@ Indicateurs : parcours réellement opérationnels, fiabilité des sauvegardes/d�
 
 ## État après la demande de tranche Reading
 Parcours Reading complet, identité personnelle, dashboard et tests livrés. La demande suivante a autorisé cette tranche au-delà du Sprint 0 initial. MinIO reste bloqué pour les futurs médias ; objectif de score, layouts supplémentaires, banque étendue et conformité/calibration restent à traiter.
+
+## Sprint 3 livré
+Quatre types Listening, MinIO privé, WAV synthétiques originaux, import DRAFT/relecture, filtres, groupes, correction objective, transcripts après clôture et section chronométrée personnalisée. Moteur et UI de session partagés, scheduler d’expiration, tests audio/replay/reprise et régressions Reading. Restent : calibrage externe, voix de meilleure qualité, vérification des règles de navigation/reprise ETS, accommodations et adaptation réelle.

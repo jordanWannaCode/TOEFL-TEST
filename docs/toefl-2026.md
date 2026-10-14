@@ -17,3 +17,6 @@ Source officielle à consulter : https://www.ets.org/toefl/test-takers/ibt/about
 | Speaking | TAKE_AN_INTERVIEW | Take an Interview |
 Tous les intitulés sont provisoires. Durée de chaque section/tâche, nombre de questions, limite de mots, replay audio, navigation, pauses, temps de préparation, adaptativité Reading/Listening, routing, pondérations, pénalités, échelle 1–6 et conversion 0–120 : NON VÉRIFIÉS. Aucun de ces paramètres n'est encodé dans l'application.
 Processus : documenter source officielle datée, règle et degré de certitude ; validation humaine puis publication d'une nouvelle version immuable. Les blueprints de pratique doivent être étiquetés personnalisés, sans revendication de conformité officielle.
+
+## Mise à jour — 14 octobre 2026
+La page ETS et le PDF de spécification 2026 sont désormais accessibles. Les quatre types Listening, la lecture unique et le maximum d’un point par item sont confirmés. Les 47 items et 29 minutes sont des valeurs approximatives/adaptatives, pas des constantes universelles. Voir ets-references/listening-2026.md pour les sources et les règles encore non vérifiées. Les affirmations provisoires ci-dessus décrivent l’état de la consultation initiale, pas une absence actuelle de toutes sources.

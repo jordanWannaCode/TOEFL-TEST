@@ -11,11 +11,11 @@ import com.toeflsimulator.identity.StudentPrincipal;
 import com.toeflsimulator.common.ApiException;
 @RestController
 @RequestMapping("/api/v1")
-public class ReadingController {
-    private final ReadingSessions sessions;
-    public ReadingController(ReadingSessions sessions) { this.sessions=sessions; }
+public class ExamController {
+    private final ExamSessions sessions;
+    public ExamController(ExamSessions sessions) { this.sessions=sessions; }
     public record Start(@NotNull UUID blueprintVersionId,@NotBlank String mode) {}
-    @GetMapping("/blueprints") Object blueprints() { return sessions.blueprints(); }
+    @GetMapping("/blueprints") Object blueprints(@RequestParam(defaultValue="READING") String section,@RequestParam(defaultValue="PRACTICE") String mode) { return sessions.blueprints(section,mode); }
     @PostMapping("/sessions") ResponseEntity<?> start(@AuthenticationPrincipal StudentPrincipal owner,@Valid @RequestBody Start body,@RequestHeader("Idempotency-Key") String key) {
         var view=sessions.create(owner.id(),body.blueprintVersionId(),body.mode(),key);
         return ResponseEntity.created(URI.create("/api/v1/sessions/"+view.id())).eTag(Integer.toString(view.version())).body(view);
@@ -31,6 +31,8 @@ public class ReadingController {
     }
     @GetMapping("/sessions/{id}/results") Object results(@AuthenticationPrincipal StudentPrincipal owner,@PathVariable UUID id) { return sessions.results(owner.id(),id); }
     @GetMapping("/dashboard") Object dashboard(@AuthenticationPrincipal StudentPrincipal owner) { return sessions.dashboard(owner.id()); }
+    public record Navigation(@Min(0) int position) {}
+    @PostMapping("/sessions/{id}/navigation") Object navigate(@AuthenticationPrincipal StudentPrincipal owner,@PathVariable UUID id,@Valid @RequestBody Navigation body) { return sessions.navigate(owner.id(),id,body.position()); }
     private ResponseEntity<?> etag(JsonNode result) { return ResponseEntity.ok().eTag(result.path("version").asText()).body(result); }
     private int version(String value) {
         if(!value.matches("\"[1-9][0-9]*\"")) throw new ApiException(422,"INVALID_VERSION","Provide the quoted ETag from the session response.");

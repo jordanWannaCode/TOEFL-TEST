@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { Blueprint, Dashboard, ResponseBody, Results, SessionView, User } from './models';
+import { Blueprint, Dashboard, ResponseBody, Results, SessionView, User, PlaybackState, ListeningExercise, TranscriptTurn } from './models';
 @Injectable({ providedIn: 'root' })
 export class Api {
   private readonly http = inject(HttpClient);
@@ -21,12 +21,12 @@ export class Api {
     this.csrf = null; this.user.set(null);
     Object.keys(sessionStorage).filter(key => key.startsWith('toefl:')).forEach(key => sessionStorage.removeItem(key));
   }
-  blueprints() { return firstValueFrom(this.http.get<Blueprint[]>('/api/v1/blueprints')); }
+  blueprints(section = "READING", mode = "PRACTICE") { return firstValueFrom(this.http.get<Blueprint[]>('/api/v1/blueprints', { params: { section, mode } })); }
   dashboard() { return firstValueFrom(this.http.get<Dashboard>('/api/v1/dashboard')); }
   session(id: string) { return firstValueFrom(this.http.get<SessionView>(`/api/v1/sessions/${id}`)); }
   results(id: string) { return firstValueFrom(this.http.get<Results>(`/api/v1/sessions/${id}/results`)); }
-  async start(blueprintVersionId: string, key: string) {
-    return firstValueFrom(this.http.post<SessionView>('/api/v1/sessions', { blueprintVersionId, mode: 'PRACTICE' }, { headers: await this.headers({ 'Idempotency-Key': key }) }));
+  async start(blueprintVersionId: string, key: string, mode = "PRACTICE") {
+    return firstValueFrom(this.http.post<SessionView>('/api/v1/sessions', { blueprintVersionId, mode }, { headers: await this.headers({ 'Idempotency-Key': key }) }));
   }
   async save(id: string, itemId: string, body: ResponseBody, version: number, key: string) {
     return firstValueFrom(this.http.put<{ version: number; savedAt: string; serverTime: string }>(`/api/v1/sessions/${id}/items/${itemId}/response`, body, { headers: await this.headers({ 'If-Match': `"${version}"`, 'Idempotency-Key': key }) }));
@@ -34,6 +34,16 @@ export class Api {
   async submit(id: string, version: number, key: string) {
     return firstValueFrom(this.http.post(`/api/v1/sessions/${id}/submit`, {}, { headers: await this.headers({ 'If-Match': `"${version}"`, 'Idempotency-Key': key }) }));
   }
+  exercises(taskType: string, difficulty: string, skill: string) { return firstValueFrom(this.http.get<ListeningExercise[]>('/api/v1/listening/exercises', { params: { taskType, difficulty, skill } })); }
+  playback(session: string, item: string) { return firstValueFrom(this.http.get<PlaybackState>(`/api/v1/sessions/${session}/items/${item}/playback`)); }
+  async play(session: string, item: string, key: string) {
+    return firstValueFrom(this.http.post<{ grantId: string; audioUrl: string }>(`/api/v1/sessions/${session}/items/${item}/playback`, {}, { headers: await this.headers({ 'Idempotency-Key': key }) }));
+  }
+  async audioProgress(session: string, item: string, grantId: string, positionMs: number, completed: boolean) {
+    return firstValueFrom(this.http.put<PlaybackState>(`/api/v1/sessions/${session}/items/${item}/playback`, { grantId, positionMs, completed }, { headers: await this.headers() }));
+  }
+  transcript(session: string, item: string) { return firstValueFrom(this.http.get<TranscriptTurn[]>(`/api/v1/sessions/${session}/items/${item}/transcript`)); }
+  async navigate(session: string, position: number) { return firstValueFrom(this.http.post<SessionView>(`/api/v1/sessions/${session}/navigation`, { position }, { headers: await this.headers() })); }
   resetCsrf() { this.csrf = null; }
 }
 export function errorMessage(error: unknown): string {

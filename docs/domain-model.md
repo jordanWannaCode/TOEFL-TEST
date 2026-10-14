@@ -22,3 +22,6 @@ Isolation : owner dérivé du principal, requêtes filtrées par owner, référe
 Adaptativité future : stratégie de sélection versionnée dans le blueprint, décisions enregistrées dans la session ; pas d'algorithme inventé en Sprint 0.
 
 Les futurs AIJob (evaluationId, retryCount, status, provider, modelVersion, latencyMs, estimatedCost) seront séparés des réponses persistées ; aucune table de job, abonnement ou paiement créée en Sprint 0. Le cycle d’examen et le cycle d’évaluation restent deux machines d’état indépendantes : une panne IA ne rouvre pas un examen.
+
+## Extension Sprint 3
+AudioAsset et ListeningStimulus associent un WAV privé, checksum, durée, locuteurs et transcript privé à une révision de groupe. Les questions du groupe partagent le même stimulus ; réponses et clés sont indexées par qid. PlaybackState et PlaybackGrant sont privés par la chaîne item → session → owner. Les politiques de playback/navigation sont copiées du blueprint vers la session, avec une position persistée. Les stratégies adaptatives restent NONE, sans faux routing.

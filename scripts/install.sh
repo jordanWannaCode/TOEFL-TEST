@@ -9,4 +9,4 @@ fi
 (cd apps/web && npm ci)
 (cd apps/ai-service && uv sync --frozen)
 # Limiter la consommation de disque et réutiliser les couches valides.
-for service in backend frontend ai-service; do ./scripts/compose.sh build "$service"; done
+for service in minio backend frontend ai-service; do ./scripts/compose.sh build "$service"; done

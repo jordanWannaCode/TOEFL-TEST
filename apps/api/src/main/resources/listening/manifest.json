@@ -1,0 +1,321 @@
+{
+  "schemaVersion": 1,
+  "exercises": [
+    {
+      "id": "40000000-0000-0000-0000-000000000001",
+      "taskType": "LISTEN_AND_CHOOSE_A_RESPONSE",
+      "title": "Finding the lab",
+      "difficulty": "A2",
+      "speakers": [
+        {
+          "id": "s1",
+          "label": "Student",
+          "voice": "en-us"
+        }
+      ],
+      "turns": [
+        {
+          "speakerId": "s1",
+          "text": "Where is the lab?"
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "Choose the best response.",
+          "skill": "INTENT",
+          "options": [
+            {
+              "id": "a",
+              "text": "On the second floor."
+            },
+            {
+              "id": "b",
+              "text": "It starts at noon."
+            },
+            {
+              "id": "c",
+              "text": "I prefer chemistry."
+            },
+            {
+              "id": "d",
+              "text": "Twice a week."
+            }
+          ]
+        }
+      ],
+      "answers": {
+        "q1": "a"
+      },
+      "feedback": {
+        "q1": "The speaker asks for a location. Only the second-floor response gives a location."
+      },
+      "reviewed": true,
+      "synthetic": true,
+      "audioFile": "40000000-0000-0000-0000-000000000001.wav",
+      "version": 1,
+      "sha256": "d8c2bf193b95d6787db0aa96bc58356545c8a44931103fbb72ae25ef6ed9055a",
+      "durationMs": 1540
+    },
+    {
+      "id": "40000000-0000-0000-0000-000000000002",
+      "taskType": "LISTEN_TO_A_CONVERSATION",
+      "title": "A study room reservation",
+      "difficulty": "B1",
+      "speakers": [
+        {
+          "id": "s1",
+          "label": "Student",
+          "voice": "en-us"
+        },
+        {
+          "id": "s2",
+          "label": "Library assistant",
+          "voice": "en-gb"
+        }
+      ],
+      "turns": [
+        {
+          "speakerId": "s1",
+          "text": "I reserved a study room for three o clock, but my group will arrive half an hour late. Can we keep the room?"
+        },
+        {
+          "speakerId": "s2",
+          "text": "We normally release a reservation after fifteen minutes. I can move yours to three thirty because that slot is still open."
+        },
+        {
+          "speakerId": "s1",
+          "text": "That would help. Do I need to make a new booking?"
+        },
+        {
+          "speakerId": "s2",
+          "text": "No, I will update this one. Please tell your group to bring their student cards."
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "What does the assistant offer to do?",
+          "skill": "DETAIL",
+          "options": [
+            {
+              "id": "a",
+              "text": "Cancel all room reservations."
+            },
+            {
+              "id": "b",
+              "text": "Move the reservation to three thirty."
+            },
+            {
+              "id": "c",
+              "text": "Extend every booking by an hour."
+            },
+            {
+              "id": "d",
+              "text": "Book a different library."
+            }
+          ]
+        },
+        {
+          "id": "q2",
+          "prompt": "Why does the student ask about making a new booking?",
+          "skill": "INTENT",
+          "options": [
+            {
+              "id": "a",
+              "text": "To request a larger room."
+            },
+            {
+              "id": "b",
+              "text": "To change the subject of the meeting."
+            },
+            {
+              "id": "c",
+              "text": "To find out whether another action is required."
+            },
+            {
+              "id": "d",
+              "text": "To ask for a new student card."
+            }
+          ]
+        }
+      ],
+      "answers": {
+        "q1": "b",
+        "q2": "c"
+      },
+      "feedback": {
+        "q1": "The assistant explicitly offers to move the existing reservation to three thirty.",
+        "q2": "The student wants to know whether they must book again. The assistant says the existing booking will be updated."
+      },
+      "reviewed": true,
+      "synthetic": true,
+      "audioFile": "40000000-0000-0000-0000-000000000002.wav",
+      "version": 1,
+      "sha256": "b30be44499eb6a89179e98a1f9b337eb7242326ebcfc7de2bae42b859042e192",
+      "durationMs": 24756
+    },
+    {
+      "id": "40000000-0000-0000-0000-000000000003",
+      "taskType": "LISTEN_TO_AN_ANNOUNCEMENT",
+      "title": "A change to the campus shuttle",
+      "difficulty": "B1",
+      "speakers": [
+        {
+          "id": "s1",
+          "label": "Campus transport coordinator",
+          "voice": "en-gb"
+        }
+      ],
+      "turns": [
+        {
+          "speakerId": "s1",
+          "text": "Attention students. Tomorrow morning the campus shuttle will leave from the science building instead of the main gate. Road repairs will block the usual stop until noon. The departure times will not change. A member of the transport team will be at the main gate to direct passengers to the temporary stop. Please allow an extra five minutes to walk there."
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "What is the main purpose of the announcement?",
+          "skill": "MAIN_IDEA",
+          "options": [
+            {
+              "id": "a",
+              "text": "To announce new departure times."
+            },
+            {
+              "id": "b",
+              "text": "To cancel the shuttle for a week."
+            },
+            {
+              "id": "c",
+              "text": "To ask students to repair a road."
+            },
+            {
+              "id": "d",
+              "text": "To explain a temporary change of shuttle stop."
+            }
+          ]
+        },
+        {
+          "id": "q2",
+          "prompt": "Why should passengers allow extra time?",
+          "skill": "DETAIL",
+          "options": [
+            {
+              "id": "a",
+              "text": "They must walk to the science building."
+            },
+            {
+              "id": "b",
+              "text": "They must buy a new ticket."
+            },
+            {
+              "id": "c",
+              "text": "Every shuttle will leave earlier."
+            },
+            {
+              "id": "d",
+              "text": "The shuttle will visit more cities."
+            }
+          ]
+        }
+      ],
+      "answers": {
+        "q1": "d",
+        "q2": "a"
+      },
+      "feedback": {
+        "q1": "The usual stop is blocked by repairs, so the shuttle temporarily leaves from the science building.",
+        "q2": "The coordinator asks passengers to allow five extra minutes to walk to the temporary stop; departure times do not change."
+      },
+      "reviewed": true,
+      "synthetic": true,
+      "audioFile": "40000000-0000-0000-0000-000000000003.wav",
+      "version": 1,
+      "sha256": "082d960660616fba19624841fb8c04f84dd41652485d3c6dbadf99dc2df5d046",
+      "durationMs": 22279
+    },
+    {
+      "id": "40000000-0000-0000-0000-000000000004",
+      "taskType": "LISTEN_TO_AN_ACADEMIC_TALK",
+      "title": "How seeds travel",
+      "difficulty": "B2",
+      "speakers": [
+        {
+          "id": "s1",
+          "label": "Biology lecturer",
+          "voice": "en-us"
+        }
+      ],
+      "turns": [
+        {
+          "speakerId": "s1",
+          "text": "Plants cannot walk to a new location, but their seeds can travel. Consider two strategies. Some seeds are light and have structures that help them float in the wind. These structures increase the surface area without adding much weight. Other seeds are enclosed in fruit. An animal eats the fruit and may carry the seeds away before dropping them. Both strategies can reduce competition between a young plant and its parent. However, neither guarantees that a seed will land in suitable soil. Wind direction is unpredictable, and animals do not choose their routes for the benefit of plants. Successful dispersal therefore depends on both a way to move and a favorable place to grow."
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "What is the main topic of the talk?",
+          "skill": "MAIN_IDEA",
+          "options": [
+            {
+              "id": "a",
+              "text": "Why all seeds need animal transport."
+            },
+            {
+              "id": "b",
+              "text": "How two seed dispersal strategies work."
+            },
+            {
+              "id": "c",
+              "text": "How plants choose an animal route."
+            },
+            {
+              "id": "d",
+              "text": "Why wind cannot carry seeds."
+            }
+          ]
+        },
+        {
+          "id": "q2",
+          "prompt": "What can be inferred about a seed that travels far from its parent?",
+          "skill": "INFERENCE",
+          "options": [
+            {
+              "id": "a",
+              "text": "It will always grow into a plant."
+            },
+            {
+              "id": "b",
+              "text": "It must have been carried by an animal."
+            },
+            {
+              "id": "c",
+              "text": "It still needs suitable growing conditions."
+            },
+            {
+              "id": "d",
+              "text": "It can no longer compete with any plant."
+            }
+          ]
+        }
+      ],
+      "answers": {
+        "q1": "b",
+        "q2": "c"
+      },
+      "feedback": {
+        "q1": "The lecturer explains wind transport and animal transport as two ways seeds disperse.",
+        "q2": "The lecturer distinguishes movement from successful growth. A favorable place to grow is still necessary."
+      },
+      "reviewed": true,
+      "synthetic": true,
+      "audioFile": "40000000-0000-0000-0000-000000000004.wav",
+      "version": 1,
+      "sha256": "bb592a901756d74f195727e51bc62cee6f42ce791aaccbd20d63ca2f5892af9e",
+      "durationMs": 43618
+    }
+  ]
+}
